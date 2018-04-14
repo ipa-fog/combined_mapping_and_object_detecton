@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<launch>
+	<!-- LOAD PARAMETERS -->
+	<rosparam file="$(find segmentation)/cfg/params.yaml" command="load" ns="segmentation" />	
+
+	<!-- LAUNCH NODE -->
+	<node name="segmentation_node" pkg="segmentation" type="segmentation_node" output="screen" />
+
+
+</launch>

@@ -1,0 +1,2 @@
+- setup-file:
+    local-name: /home/florenzgraf/catkin_ws/src/segmentation/devel/setup.sh

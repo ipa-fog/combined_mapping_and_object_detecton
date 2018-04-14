@@ -1,0 +1,8 @@
+prefix=/home/florenzgraf/catkin_ws/src/segmentation/devel
+
+Name: segmentation
+Description: Description of segmentation
+Version: 0.1.0
+Cflags: 
+Libs: -L/home/florenzgraf/catkin_ws/src/segmentation/devel/lib 
+Requires: 
