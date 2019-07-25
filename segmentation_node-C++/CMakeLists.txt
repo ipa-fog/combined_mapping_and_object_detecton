@@ -10,8 +10,7 @@ find_package(catkin REQUIRED COMPONENTS
   cv_bridge
   image_transport
   image_geometry
-  
-
+  darknet_ros_msgs
 )
 
 catkin_package()
@@ -28,7 +27,7 @@ add_executable(segmentation_node
   include/segmentation/segmentation_node.h
 )
 
-
+ add_dependencies(segmentation_node ${catkin_EXPORTED_TARGETS})
 
 target_link_libraries(segmentation_node
   ${catkin_LIBRARIES}

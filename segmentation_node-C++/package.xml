@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<package>
-  <name>segmentation</name>
+<package format="2">
+<name>segmentation</name>
   <version>0.1.0</version>
   <description>segmentation</description>
 
@@ -9,32 +9,14 @@
 
   <buildtool_depend>catkin</buildtool_depend>
 
-  <build_depend>roscpp</build_depend>
-  <build_depend>std_msgs</build_depend>
-  <build_depend>std_srvs</build_depend>
-  <build_depend>sensor_msgs</build_depend>
-  <build_depend>pcl_ros</build_depend>
-  <build_depend>darknet_ros</build_depend>
-  <build_depend>libpcl-all-dev</build_depend>
-
-  <build_depend>cv_bridge</build_depend>
-  <build_depend>image_transport</build_depend>
-
-
-
-
-  <run_depend>roscpp</run_depend>
-  <run_depend>std_msgs</run_depend>
-  <run_depend>std_srvs</run_depend>
-  <run_depend>pcl_ros</run_depend>
-  <run_depend>sensor_msgs</run_depend>
-  <run_depend>darknet_ros</run_depend>
-  <run_depend>libpcl-all</run_depend>
-
-
-  <run_depend>cv_bridge</run_depend>
-  <run_depend>image_transport</run_depend>
-
-
+  <depend>roscpp</depend>
+  <depend>std_msgs</depend>
+  <depend>std_srvs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>pcl_ros</depend>
+  <depend>darknet_ros_ros</depend>
+  <depend>libpcl-all-dev</depend>
+  <depend>cv_bridge</depend>
+  <depend>image_transport</depend>
 
 </package>

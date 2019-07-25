@@ -27,7 +27,6 @@
  */
 
 #include "segmentation/segmentation_node.h"
-#include "ros/package.h"
 
 //########## CONSTRUCTOR ###############################################################################################
 SegmentationNode::SegmentationNode(ros::NodeHandle &node_handle):
@@ -43,7 +42,7 @@ SegmentationNode::SegmentationNode(ros::NodeHandle &node_handle):
 
     // === SUBSCRIBERS ===
 
-    sub_yolo_bb_ = node_->subscribe("/vision/yolo2/detections", 1, &SegmentationNode::BBoxesCallback, this);
+    sub_yolo_bb_ = node_->subscribe("/darknet_ros/bounding_boxes", 1, &SegmentationNode::BBoxesCallback, this);
     sub_camera_depth_ = node_->subscribe("/camera/depth_registered/points", 1, &SegmentationNode::cloud_segment, this);
     sub_camera_info_ = node_->subscribe("/camera/rgb/camera_info", 1, &SegmentationNode::camera_info, this);
 
@@ -74,7 +73,7 @@ void SegmentationNode::readFile()
 }
 
 //########## CALLBACK: SUBSCRIBER ######################################################################################
-void SegmentationNode::BBoxesCallback(const yolo2::ImageDetections::ConstPtr &bb)
+void SegmentationNode::BBoxesCallback(const darknet_ros_msgs::BoundingBoxes::ConstPtr &bb)
 {
      // get Bounding Box data from yolo
      arrayBB = *bb;
@@ -91,7 +90,7 @@ void SegmentationNode::camera_info (const sensor_msgs::CameraInfo::ConstPtr&info
 
 void SegmentationNode::cloud_segment (const sensor_msgs::PointCloud2::ConstPtr& cloud_in)
 {
-    if (!arrayBB.detections.empty())
+    if (!arrayBB.bounding_boxes.empty())
     {
         //load and encoding Pointcloud from ROS message
         pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_pcl (new pcl::PointCloud<pcl::PointXYZRGB>);
@@ -121,20 +120,19 @@ void SegmentationNode::cloud_segment (const sensor_msgs::PointCloud2::ConstPtr& 
 
 
         //loop for each detected Bounding Box
-        for (uint i=0; i<arrayBB.detections.size();++i)
+        for (uint i=0; i<arrayBB.bounding_boxes.size();++i)
         {
             //get class name[i] and ID[i] from /vision/yolo2/detections
-            objectclass=arrayBB.detections[i].class_id;
-            objectname = names_[arrayBB.detections[i].class_id];
+            objectname = arrayBB.bounding_boxes[i].Class;
 
             //get condidence[i] from /vision/yolo2/detections
-            confidence=arrayBB.detections[i].confidence;
+            confidence=arrayBB.bounding_boxes[i].probability;
 
             //Transform from BB middle point, width and height to BB min / max points *****include scale factor*******
-            x1 = (uint)((arrayBB.detections[i].x - (0.5*factorBBSize_*arrayBB.detections[i].width))*depth_image_8bit.cols);
-            x2 = (uint)((arrayBB.detections[i].x + (0.5*factorBBSize_*arrayBB.detections[i].width))*depth_image_8bit.cols);
-            y1 = (uint)((arrayBB.detections[i].y - (0.5*factorBBSize_*arrayBB.detections[i].height))*depth_image_8bit.rows);
-            y2 = (uint)((arrayBB.detections[i].y + (0.5*factorBBSize_*arrayBB.detections[i].height))*depth_image_8bit.rows);
+            x1 = (uint)(arrayBB.bounding_boxes[i].xmin);
+            x2 = (uint)(arrayBB.bounding_boxes[i].xmax);
+            y1 = (uint)(arrayBB.bounding_boxes[i].ymin);
+            y2 = (uint)(arrayBB.bounding_boxes[i].ymax);
 
             //BB must be inside Image Borders
             if(x1 < 0)
@@ -283,15 +281,15 @@ void SegmentationNode::cloud_segment (const sensor_msgs::PointCloud2::ConstPtr& 
             points.header.stamp =  text.header.stamp = line.header.stamp = ros::Time::now();
             points.action = text.action =text.action = visualization_msgs::Marker::ADD;
             points.pose.orientation.w = line.pose.orientation.w = text.pose.orientation.w = 1.0;
-            points.id = text.id = line.id = objectclass; //set point id
-
+            points.id = text.id = line.id = int_id_; //set point id
+            int_id_ +=1;
 
             points.type = visualization_msgs::Marker::POINTS;
             points.scale.x = 0.01; // set size as cube in x
             points.scale.y = 0.01; // set size as cube in y
             points.color.b = 1.0f; // set color
-            points.color.r = objectclass/80; // set color
-            points.color.g = objectclass/80;
+            points.color.r = 0.0; // set color
+            points.color.g = 0.0;
             points.color.a = 0.6;  // set transparency
 
 
@@ -313,12 +311,13 @@ void SegmentationNode::cloud_segment (const sensor_msgs::PointCloud2::ConstPtr& 
                     p.z = cloud_pcl->points[k].z;
                     points.points.push_back(p);
 
-                    if(objectclass==0)
+              /*      if(objectclass==0)
                     {
                         cloud_pcl->points[k].x = 0;
                         cloud_pcl->points[k].y = 0;
                         cloud_pcl->points[k].z = 0;
                     }
+                    */
 
                 }
 

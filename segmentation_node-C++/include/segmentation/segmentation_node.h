@@ -42,6 +42,7 @@
 #include <image_geometry/pinhole_camera_model.h>
 #include <sensor_msgs/distortion_models.h>
 #include <boost/make_shared.hpp>
+#include "ros/package.h"
 
 
 //######################################### INCLUDE IMAGE PROCESSING HEADERS #########################################################
@@ -65,8 +66,8 @@
 #include <pcl/point_cloud.h>
 
 //######################################### YOLO DATA #################################################################################
-#include <yolo2/ImageDetections.h>
-
+#include <darknet_ros_msgs/BoundingBoxes.h>
+#include <darknet_ros_msgs/BoundingBox.h>
 
 using namespace cv;
 
@@ -90,20 +91,19 @@ private:
 
     std::vector<std::string> names_;
 
-
+    int32_t int_id_ = 0;
     // Parameters from darknet_ros Bounding Box
     int x1;
     int x2;
     int y1;
     int y2;
     float confidence;
-    int objectclass;
     std::string objectname;
 
     std::vector<uchar> array;
     std::vector<uchar> array2;
 
-    yolo2::ImageDetections arrayBB;
+    darknet_ros_msgs::BoundingBoxes arrayBB;
     sensor_msgs::CameraInfo camerainfo;
     image_geometry::PinholeCameraModel pinmodel;
 
@@ -113,7 +113,7 @@ private:
     int MaximumFilterSize_;
 
     // callbacks
-    void BBoxesCallback(const yolo2::ImageDetections::ConstPtr& bb);
+    void BBoxesCallback(const darknet_ros_msgs::BoundingBoxes::ConstPtr& bb);
     void cloud_segment (const sensor_msgs::PointCloud2::ConstPtr& cloud_in);
     void camera_info (const sensor_msgs::CameraInfo::ConstPtr& info);
     void readFile();
